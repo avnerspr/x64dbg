@@ -2761,3 +2761,14 @@ void MainWindow::updateStyle()
     appPalette.setColor(QPalette::Link, ConfigColor("LinkColor"));
     QApplication::setPalette(appPalette);
 }
+
+
+void MainWindow::on_actionExportBreakpoints_triggered()
+{
+    if(!DbgIsDebugging())
+        return;
+    auto filename = QFileDialog::getSaveFileName(this, tr("Export Breakpoints"), QString(), tr(".csv;;All files (*.*)"));
+    if(!filename.length())
+        return;
+    DbgCmdExec(QString("bpsave \"%1\"").arg(QDir::toNativeSeparators(filename)));
+}

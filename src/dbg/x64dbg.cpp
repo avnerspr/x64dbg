@@ -321,6 +321,8 @@ static void registercommands()
     dbgcmdnew("dbload,loaddb", cbInstrDbload, true); //load program database
     dbgcmdnew("dbclear,cleardb", cbInstrDbclear, true); //clear program database
 
+    dbgcmdnew("bpsave", cbInstrBpsave, true); //clear program breakpoints
+
     dbgcmdnew("commentset,cmt,cmtset", cbInstrCommentSet, true); //set/edit comment
     dbgcmdnew("commentdel,cmtc,cmtdel", cbInstrCommentDel, true); //delete comment
     dbgcmdnew("commentlist", cbInstrCommentList, true); //list comments

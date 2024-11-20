@@ -13,6 +13,16 @@
 #include "stringformat.h"
 #include "_exports.h"
 
+bool cbInstrBpsave(int argc, char* argv[])
+{
+    if(argc <= 1)
+    {
+        return false;
+    }
+    Bpsave(argv[1]);
+    return true;
+}
+
 bool cbInstrDbsave(int argc, char* argv[])
 {
     DbSave(DbLoadSaveType::All, argc > 1 ? argv[1] : nullptr, argc > 1);

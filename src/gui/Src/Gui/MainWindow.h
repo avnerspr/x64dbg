@@ -285,8 +285,10 @@ private slots:
     void on_actionImportSettings_triggered();
     void on_actionImportdatabase_triggered();
     void on_actionExportdatabase_triggered();
+    void on_actionExportBreakpoints_triggered();
     void on_actionPlugins_triggered();
     void on_actionCheckUpdates_triggered();
     void on_actionDefaultTheme_triggered();
     void on_actionAbout_Qt_triggered();
+
 };

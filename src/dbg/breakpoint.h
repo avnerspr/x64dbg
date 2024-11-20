@@ -77,6 +77,7 @@ uint32 BpGetHitCount(duint Address, BP_TYPE Type);
 bool BpResetHitCount(duint Address, BP_TYPE Type, uint32 newHitCount);
 void BpToBridge(const BREAKPOINT* Bp, BRIDGEBP* BridgeBp);
 void BpCacheSave(JSON Root);
+void Bpsave(char* file);
 void BpCacheLoad(JSON Root, bool migrateCommandCondition);
 void BpClear();
 void BpLogFileAcquire(const std::string & logFile);

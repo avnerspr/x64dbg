@@ -11,6 +11,8 @@
 #include "value.h"
 #include "debugger.h"
 #include "exception.h"
+#include "filemap.h"
+#include "stringformat.h"
 #include <algorithm>
 
 typedef std::pair<BP_TYPE, duint> BreakpointKey;
@@ -850,6 +852,62 @@ void BpToBridge(const BREAKPOINT* Bp, BRIDGEBP* BridgeBp)
     BridgeBp->slot = (unsigned short)BpToBridgeHwSlot(*Bp);
     BridgeBp->hwSize = (unsigned char)BpToBridgeHwSize(*Bp);
     BridgeBp->typeEx = (unsigned char)BpToBridgeTypeEx(*Bp);
+}
+
+static String Bptype_to_str(BP_TYPE type)
+{
+    switch(type)
+    {
+
+    case BPNORMAL:
+        return "Normal";
+    case BPHARDWARE:
+        return "Hardware";
+    case BPMEMORY:
+        return "Memory";
+    case BPDLL:
+        return "DLL";
+    case BPEXCEPTION:
+        return "Exception";
+    default:
+        return "";
+    }
+    return "";
+}
+
+
+void Bpsave(char* file)
+{
+    if(!file) return;
+
+    auto filename = strrchr(file, '\\');
+    dprintf(QT_TRANSLATE_NOOP("DBG", "Saving breakpoints (.csv) to %s "), file);
+
+    EXCLUSIVE_ACQUIRE(LockBreakpoints);
+    std::stringstream stream;
+    for(const auto & i : breakpoints)
+    {
+        auto bp = i.second;
+        stream << std::hex << bp.addr << ',' << (bp.active ? "Enabled" : "Disabled") << ',' << Bptype_to_str(bp.type) << "\n";
+
+    }
+    // if (!data) return;
+    auto wdbpath = StringUtils::Utf8ToUtf16(file);
+    auto dumpSuccess = false;
+    auto hFile = CreateFileW(wdbpath.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, 0, nullptr);
+    if(hFile != INVALID_HANDLE_VALUE)
+    {
+        BufferedWriter bufWriter(hFile);
+        auto data = stream.str();
+        dumpSuccess = bufWriter.Write(data.c_str(), data.size());
+    }
+    if(!dumpSuccess)
+    {
+        String error = stringformatinline(StringUtils::sprintf("{winerror@%x}", GetLastError()));
+        dprintf(QT_TRANSLATE_NOOP("DBG", "\nFailed to write breakpoints file (.csv) !(GetLastError() = %s)\n"), error.c_str());
+        return;
+    }
+
 }
 
 void BpCacheSave(JSON Root)

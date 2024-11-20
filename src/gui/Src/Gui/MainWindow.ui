@@ -23,7 +23,7 @@
      <x>0</x>
      <y>0</y>
      <width>868</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -61,6 +61,7 @@
     <addaction name="actionAttach"/>
     <addaction name="actionDetach"/>
     <addaction name="menuDatabase"/>
+    <addaction name="actionExportBreakpoints"/>
     <addaction name="actionPatches"/>
     <addaction name="actionChangeCommandLine"/>
     <addaction name="actionRestartAdmin"/>
@@ -1547,6 +1548,18 @@
    </property>
    <property name="statusTip">
     <string>Output the detailed help information about an assembly mnemonic to the log. Equivalent command &quot;mnemonichelp name&quot;.</string>
+   </property>
+  </action>
+  <action name="actionExportBreakpoints">
+   <property name="icon">
+    <iconset resource="../../resource.qrc">
+     <normaloff>:/Default/icons/download_symbols.png</normaloff>:/Default/icons/download_symbols.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;ExportBreakpoints</string>
+   </property>
+   <property name="toolTip">
+    <string>Export Breakpoints as (.csv)</string>
    </property>
   </action>
  </widget>
