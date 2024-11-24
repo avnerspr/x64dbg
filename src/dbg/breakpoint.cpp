@@ -14,6 +14,7 @@
 #include "filemap.h"
 #include "stringformat.h"
 #include <algorithm>
+#include <fstream>
 
 typedef std::pair<BP_TYPE, duint> BreakpointKey;
 static std::map<BreakpointKey, BREAKPOINT> breakpoints;
@@ -875,8 +876,18 @@ static String Bptype_to_str(BP_TYPE type)
     return "";
 }
 
+static BP_TYPE str_to_bptype(String str)
+{
+    if(str == "Normal") return BPNORMAL;
+    else if(str == "Hardware") return BPHARDWARE;
+    else if(str == "Memory") return BPMEMORY;
+    else if(str == "DLL") return BPDLL;
+    else if(str == "Exception") return BPEXCEPTION;
+    return BPNORMAL;
+}
 
-void Bpsave(char* file)
+
+void Bpsave(const char* file)
 {
     if(!file) return;
 
@@ -888,7 +899,18 @@ void Bpsave(char* file)
     for(const auto & i : breakpoints)
     {
         auto bp = i.second;
-        stream << std::hex << bp.addr << ',' << (bp.active ? "Enabled" : "Disabled") << ',' << Bptype_to_str(bp.type) << "\n";
+        String stateName;
+        if(!bp.active)
+            stateName = ("Inactive");
+        else if(bp.enabled)
+            stateName = bp.singleshoot ? ("One-time") : ("Enabled");
+        else
+            stateName = ("Disabled");
+        duint addr = bp.addr;
+        // Add the module base when applicable
+        if(bp.type != BPDLL && bp.type != BPEXCEPTION)
+            addr += ModBaseFromName(bp.module.c_str());
+        stream << std::hex << addr << ',' << stateName << ',' << Bptype_to_str(bp.type) << "\n";
 
     }
     // if (!data) return;
@@ -956,6 +978,58 @@ void BpCacheSave(JSON Root)
 
     // Notify garbage collector
     json_decref(jsonBreakpoints);
+}
+
+std::vector<std::string> split(const std::string & str, char delimiter)
+{
+    std::vector<std::string> tokens;
+    std::stringstream ss(str);
+    std::string token;
+
+    while(std::getline(ss, token, delimiter))
+    {
+        tokens.push_back(token);
+    }
+
+    return tokens;
+}
+
+
+void Bpload(const char*   file)
+{
+    if(!file) return;
+
+    auto filename = strrchr(file, '\\');
+
+    EXCLUSIVE_ACQUIRE(LockBreakpoints);
+    dprintf(QT_TRANSLATE_NOOP("DBG", "Loading breakpoints (.csv) from %s "), file);
+
+
+    std::ifstream data(file);
+    if(!data.is_open())
+    {
+        String error = stringformatinline(StringUtils::sprintf("{winerror@%x}", GetLastError()));
+        dprintf(QT_TRANSLATE_NOOP("DBG", "\nInvalid File Name (.csv) !(GetLastError() = %s)\n"), error.c_str());
+        return;
+    }
+    std::string line;
+    while(std::getline(data, line))
+    {
+        std::vector<String> tokens = split(line, ',');
+        if(tokens.size() != 3)
+        {
+            dprintf(QT_TRANSLATE_NOOP("DBG", "\nInvalid (.csv) File, a line without 3 tokens, line = %s\n"), line.c_str());
+            return;
+        };
+        BP_TYPE type = str_to_bptype(tokens.back());
+        tokens.pop_back();
+        String state = tokens.back();
+        tokens.pop_back();
+        duint addr = (duint)std::stoull(tokens.back(), nullptr, 16);
+        bool enabled = (state == "One-time" || state == "Enabled");
+        bool singleshoot = (state == "One-time");
+        BpNew(addr, enabled, singleshoot, 0, type, 0, "");
+    }
 }
 
 template<size_t Count>

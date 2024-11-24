@@ -3,6 +3,7 @@
 #include "command.h"
 
 bool cbInstrBpsave(int argc, char* argv[]);
+bool cbInstrBpload(int argc, char* argv[]);
 
 bool cbInstrDbsave(int argc, char* argv[]);
 bool cbInstrDbload(int argc, char* argv[]);

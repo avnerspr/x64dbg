@@ -23,6 +23,17 @@ bool cbInstrBpsave(int argc, char* argv[])
     return true;
 }
 
+bool cbInstrBpload(int argc, char* argv[])
+{
+    if(argc <= 1)
+    {
+        return false;
+    }
+    Bpload(argv[1]);
+    return true;
+}
+
+
 bool cbInstrDbsave(int argc, char* argv[])
 {
     DbSave(DbLoadSaveType::All, argc > 1 ? argv[1] : nullptr, argc > 1);

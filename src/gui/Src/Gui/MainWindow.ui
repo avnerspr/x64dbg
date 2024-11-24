@@ -56,12 +56,19 @@
      <addaction name="actionImportdatabase"/>
      <addaction name="actionExportdatabase"/>
     </widget>
+    <widget class="QMenu" name="menuBreakpoints">
+     <property name="title">
+      <string>Breakpoints</string>
+     </property>
+     <addaction name="actionLoadBreakpoints"/>
+     <addaction name="actionExportBreakpoints"/>
+    </widget>
     <addaction name="actionOpen"/>
     <addaction name="menuRecentFiles"/>
     <addaction name="actionAttach"/>
     <addaction name="actionDetach"/>
     <addaction name="menuDatabase"/>
-    <addaction name="actionExportBreakpoints"/>
+    <addaction name="menuBreakpoints"/>
     <addaction name="actionPatches"/>
     <addaction name="actionChangeCommandLine"/>
     <addaction name="actionRestartAdmin"/>
@@ -1560,6 +1567,15 @@
    </property>
    <property name="toolTip">
     <string>Export Breakpoints as (.csv)</string>
+   </property>
+  </action>
+  <action name="actionLoadBreakpoints">
+   <property name="icon">
+    <iconset resource="../../resource.qrc">
+     <normaloff>:/Default/icons/pdb.png</normaloff>:/Default/icons/pdb.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;ImportBreakpoints</string>
    </property>
   </action>
  </widget>

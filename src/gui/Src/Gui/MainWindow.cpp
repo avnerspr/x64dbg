@@ -2772,3 +2772,13 @@ void MainWindow::on_actionExportBreakpoints_triggered()
         return;
     DbgCmdExec(QString("bpsave \"%1\"").arg(QDir::toNativeSeparators(filename)));
 }
+
+void MainWindow::on_actionLoadBreakpoints_triggered()
+{
+    if(!DbgIsDebugging())
+        return;
+    auto filename = QFileDialog::getOpenFileName(this, tr("Import Breakpoints"), QString(), tr(".csv;;All files (*.*)"));
+    if(!filename.length())
+        return;
+    DbgCmdExec(QString("bpload \"%1\"").arg(QDir::toNativeSeparators(filename)));
+}
